@@ -15,11 +15,23 @@ class BookController extends Controller
     {
         $title = $request->input('title'); // use $title consistently
 
+        $filter = $request->input('filter','');
+
+        
         $books = Book::when(
             $title, 
             function ($query, $title){ 
                 return $query->title($title);
-            })->get(); 
+            });
+            $books = match($filter){  
+                'highest_rated' => $books->highestRated(),
+                'popular_last_month' => $books->PopularLastMonth(),
+                'popular_last_6months' => $books->PopularLast6Months(),
+                'popular_rated_last_month' => $books->HighestRatedLastMonth(),
+                'popular_rated_last_6months' => $books->HighestRatedLast6Months(),
+                default => $books->latest(),
+            };
+            $books = $books->get(); 
         return view('books.index', ['books' => $books]);
     }
 
@@ -51,9 +63,16 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Book $book)
     {
-        //
+        return view(
+            'books.show',
+            [
+                'book' => $book->load([
+                    'reviews' => fn($query) => $query->latest()
+                ])
+            ]
+        );
     }
 
     /**

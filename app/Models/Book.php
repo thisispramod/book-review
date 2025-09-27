@@ -19,6 +19,11 @@ class Book extends Model
         return $query->where('title', 'LIKE', '%' . $title . '%');
     }
 
+    public function scopeLatest($query)
+    {
+        return $query->orderBy('created_at', 'desc')->limit(10);
+    }   
+
     
     public function scopeMinReviews($query , int $minReviews) {
         return $query->having('reviews_count', '>=', $minReviews);
@@ -61,15 +66,20 @@ class Book extends Model
     
     public function scopePopularLast6Months($query) {
          return $query->popular(now()->subMonths(6), now())
-         ->HighestRated(now()->submonth(), now())
+         ->HighestRated(now()->submonths(), now())
          ->minReviews(5);
     }
 
     public function scopeHighestRatedLastMonth($query) {
-         return $query->popular(now()->subMonths(6), now())
-         ->HighestRated(now()->submonth(), now())
-         ->minReviews(5);
+         return $query->HighestRated(now()->submonth(), now())
+         ->popular(now()->subMonth(), now())
+         ->minReviews(2);
     }
 
+    public function scopeHighestRatedLast6Months($query) {
+         return $query->HighestRated(now()->submonths(), now())
+         ->popular(now()->subMonths(6), now())
+         ->minReviews(5);
+    }
     
 }

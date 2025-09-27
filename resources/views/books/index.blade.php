@@ -2,7 +2,8 @@
 
 @section('content')
     <h1 class="mb-10 text-2xl">Books</h1>
-    <form method="GET" action="{{ route('books.index')}}" class="mb-4 flex items-center space-x-2">
+    <span>{{ count($books)?? 0}} total records</span>
+    <form method="GET" action="{{ route('books.index')}}" class="mb-4 flex items-center space-x-2"> 
         <input type="text" name="title" value="{{ request('title') }}" class="input h-10" placeholder="Search Book">
         <input type="hidden" value="{{ request('filter') }}" name="filter">
         <button class="btn h-10">Search</button>
@@ -16,11 +17,14 @@
             'popular_last_month' => 'Popular Last Month',
             'popular_last_6months' => 'Popular Last 6 Months',
             'popular_rated_last_month' => 'Highest Rated Last Month',
-            'popular_rated_last_6month' => 'Highest Rated Last 6 Months'
+            'popular_rated_last_6months' => 'Highest Rated Last 6 Months'
             ];
         @endphp
-        @foreach ($filters as $key => $label )
-            <a href="{{ route('books.index', ['filter' => $key])}}" class="{{ request('filter') === $key || (request('filter') === null && $key === '') ? 'filter-item-active' : 'filter-item' }}">{{ $label}}</a>
+        @foreach ($filters as $key => $label)
+            <a href="{{ route('books.index', [...request()->query(), 'filter' => $key]) }}"
+                class="{{ request('filter') === $key || (request('filter') === null && $key === '') ? 'filter-item-active' : 'filter-item' }}">
+                {{ $label }}
+            </a>
         @endforeach
     </div>
     
