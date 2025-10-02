@@ -11,6 +11,11 @@ class ReviewController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function __construct() {
+        $this->middleware('throttle:reviews')->only(['store']);
+    }
+    
     public function index()
     {
         //
