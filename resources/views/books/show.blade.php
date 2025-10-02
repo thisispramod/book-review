@@ -17,7 +17,10 @@
         <x-start-rating :rating="$book->reviews_avg_rating"/>
     </div>
   </div>
-
+  <div class="mb-4"> 
+    <a href="{{ route('books.reviews.create', $book)}}">Add Review</a>
+  </div>
+  
   <div>
     <h2 class="mb-4 text-xl font-semibold">Reviews</h2>
     <ul>
