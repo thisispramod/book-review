@@ -14,6 +14,7 @@
           {{ $book->reviews_count }} {{ Str::plural('review', $book->reviews_count) }}
         </span>
       </div>
+        <x-start-rating :rating="$book->reviews_avg_rating"/>
     </div>
   </div>
 
@@ -24,7 +25,9 @@
         <li class="book-item mb-4">
           <div>
             <div class="mb-2 flex items-center justify-between">
-              <div class="font-semibold">{{ $review->rating }}</div>
+              <div class="font-semibold"> 
+                <x-start-rating :rating="$review->rating"/>
+              </div>
               <div class="book-review-count">
                 {{ $review->created_at->format('M j, Y') }}</div>
             </div>

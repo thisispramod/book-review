@@ -28,9 +28,8 @@ class Book extends Model
     public function scopeMinReviews($query , int $minReviews) {
         return $query->having('reviews_count', '>=', $minReviews);
     }
-    
-    public function scopePopular($query, $from = null, $to = null)
-    {
+
+    public function scopeWithReviewsCount($query, $from = null, $to = null){
         return $query->withCount(['reviews' => function($q) use ($from, $to) {
             if ($from && $to) {
                 $q->whereBetween('created_at', [$from, $to]);
@@ -41,10 +40,21 @@ class Book extends Model
             }
         }])->orderBy('reviews_count', 'desc');
     }
+    
+    
+    public function scopeWithAvgRating($query, $from = null, $to = null){
+        return $query->withAvg('reviews', 'rating')->orderBy('reviews_count', 'desc');
+    }
+    
+    public function scopePopular($query, $from = null, $to = null)
+    {
+        return $query->withReviewsCount()
+                ->orderBy('reviews_count', 'desc');
+    }
  
     
     public function scopeHighestRated($query) {
-        return $query->withAvg('reviews', 'rating')
+        return $query->WithAvgRating()
         ->orderBy('reviews_avg_rating','desc');
     }
 
@@ -80,6 +90,11 @@ class Book extends Model
          return $query->HighestRated(now()->submonths(), now())
          ->popular(now()->subMonths(6), now())
          ->minReviews(5);
+    }
+
+    protected static function booted() {
+        static::updated(fn(Book $book) => cache()->forget('book:' . $book->id));
+        static::deleted(fn(Book $book) => cache()->forget('book:' . $book->id));
     }
     
 }
