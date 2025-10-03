@@ -44,6 +44,10 @@ class ReviewController extends Controller
             'review' => 'required|string|max:1000',
         ]);
 
+        if(empty($book)){
+              return back()->withErrors(['form' => 'Form data cannot be empty.']);
+        }
+
         $book->reviews()->create($data);
 
         return redirect()->route('books.show', $book)->with('success', 'Review added successfully.');
